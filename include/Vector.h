@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "Iterators.h"
+#include "TypeTraits.h"
 
 namespace learncpp
 {
@@ -25,9 +26,9 @@ public:
     using pointer = value_type*;
     using const_pointer = const value_type*;
     using iterator = RandomAcessIterator<value_type>;
-    using const_iterator = RandomAcessIterator<const value_type>;
+    using const_iterator = const RandomAcessIterator<value_type>;
     using reverse_iterator = ReverseRandomAcessIterator<value_type>;
-    using const_reverse_iterator = ReverseRandomAcessIterator<const value_type>;
+    using const_reverse_iterator = const ReverseRandomAcessIterator<value_type>;
 
     /**************************************/
     /*        SPECIAL MEMBER FUNCTIONS    */
@@ -93,7 +94,7 @@ public:
 
     constexpr vector& operator=(const vector& other)
     {
-        if (this != std::adressof(other))
+        if (this != std::addressof(other))
         {
             if (m_size != other.m_size)
             {
@@ -118,7 +119,7 @@ public:
 
     constexpr vector& operator=(vector&& other) noexcept
     {
-        if (this != std::adressof(other))
+        if (this != std::addressof(other))
         {
             m_allocator.deallocate(m_data);
 
@@ -367,9 +368,9 @@ public:
 
     constexpr iterator insert(const_iterator pos, value_type&& value)
     {
-        difference_type index = pos - begin();
+        const difference_type index = pos - begin();
         
-        if (index > m_size)
+        if (static_cast<size_type>(index) > m_size) // TODO
         {
             throw new std::out_of_range("Insert index is out of range");
         }
@@ -381,7 +382,7 @@ public:
 
         iterator it = &m_data[index];
 
-        std::move(it, end(), it + 1);
+        std::move_backward(it - 1, end(), end() + 1);
         *it = std::move(value);
 
         m_size += 1;
@@ -393,7 +394,7 @@ public:
     {
         const difference_type index = pos - begin();
         
-        if (index > m_size)
+        if (static_cast<size_type>(index) > m_size) // TODO
         {
             throw new std::out_of_range("Insert index is out of range");
         }
@@ -405,7 +406,7 @@ public:
 
         iterator it = &m_data[index];
 
-        std::move(it, end(), it + count);
+        std::move_backward(it, end(), end() + count);
         std::fill_n(it, count, value);
 
         m_size += count;
@@ -413,11 +414,16 @@ public:
         return it;
     }
 
-    template<class InputIt>
+    template<class InputIt, is_input_iterator<InputIt> = 0>
     constexpr iterator insert(const_iterator pos, InputIt first, InputIt last)
     {
         const difference_type count = last - first;
         const difference_type index = pos - begin();
+        
+        if (static_cast<size_type>(index) > max_size()) // TODO
+        {
+            throw new std::out_of_range("Insert index is out of range");
+        }
         
         if (m_size + count > m_capacity)
         {
@@ -425,7 +431,7 @@ public:
         }
         
         iterator it = &m_data[index];
-        std::move(it, end(), it + count);
+        std::move_backward(it, end(), end() + count);
         std::copy(first, last, it);
         
         m_size += count;
@@ -435,8 +441,13 @@ public:
 
     constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> ilist)
     {
-        const difference_type count = ilist.m_size;
+        const difference_type count = ilist.size();
         const difference_type index = pos - begin();
+
+        if (static_cast<size_type>(index) > max_size()) // TODO
+        {
+            throw new std::out_of_range("Insert index is out of range");
+        }
         
         if (m_size + count > m_capacity)
         {
@@ -444,7 +455,7 @@ public:
         }
         
         iterator it = &m_data[index];
-        std::move(it, end(), it + count);
+        std::move_backward(it, end(), end() + count);
         std::copy(ilist.begin(), ilist.end(), it);
         
         m_size += count;
@@ -452,29 +463,10 @@ public:
         return it;
     }
 
-    // TODO
     template<class... Args>
     constexpr iterator emplace(iterator pos, Args&&... args)
     {
-        const difference_type index = pos - begin();
-
-        if (static_cast<size_type>(index) > max_size())
-        {
-            throw new std::out_of_range("Insert index is out of range");
-        }
-
-        if (m_size == m_capacity)
-        {
-            reallocate(m_size + 1);
-        }
-        
-        iterator it = &m_data[index];
-        
-        std::move(it, end(), it + 1);
-
-        m_size += 1;
-        
-        return it;
+        return insert(pos, std::move(value_type(args...)));
     }
 
     constexpr iterator erase(const_iterator pos)

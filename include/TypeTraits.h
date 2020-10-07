@@ -10,16 +10,11 @@
 namespace learncpp
 {
 
-template <typename T>
-struct is_container : public std::false_type {};
+template<typename Iter>
+using iterator_category_t = typename std::iterator_traits<Iter>::iterator_category;
 
-template<class T, class Alloc>
-struct is_container<learncpp::vector<T, Alloc>> : public std::true_type {};
-
-template <typename T>
-struct is_forward_iterator : public std::false_type {};
-
-template<class T>
-struct is_forward_iterator<learncpp::RandomAcessIterator<T>> : public std::true_type {};
+template<typename InputIt>
+using is_input_iterator = std::enable_if_t<
+    std::is_convertible<iterator_category_t<InputIt>, std::input_iterator_tag>::value>;
 
 } // namespace learncpp

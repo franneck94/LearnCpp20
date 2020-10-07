@@ -44,7 +44,16 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cc
 	$(CPP_COMPILER_CALL) -I $(INCLUDE_DIR) -c $< -o $@
 
 testPair:
-	$(CPP_COMPILER_CALL) -I $(INCLUDE_DIR) $(TEST_DIR)/test_pair.cc -o testPairMain
+	$(CPP_COMPILER_CALL) -I $(INCLUDE_DIR) $(TEST_DIR)/test_pair.cc -o ./$(BUILD_DIR)/testPairMain
+	./$(BUILD_DIR)/testPairMain
+
+testArray:
+	$(CPP_COMPILER_CALL) -I $(INCLUDE_DIR) $(TEST_DIR)/test_array.cc -o ./$(BUILD_DIR)/testArrayMain
+	./$(BUILD_DIR)/testArrayMain
+
+testVector:
+	$(CPP_COMPILER_CALL) -I $(INCLUDE_DIR) $(TEST_DIR)/test_vector.cc -o ./$(BUILD_DIR)/testVectorMain
+	./$(BUILD_DIR)/testVectorMain
 
 execute:
 	./$(BUILD_DIR)/$(EXECUTABLE_NAME)

@@ -6,12 +6,11 @@ namespace learncpp
 {
 
 template <class T1, class T2>
-class pair
+struct pair
 {
-public:
     using first_type = T1;
     using second_type = T2;
-public:
+
     /**
      * @brief Default constructor for same types.
      * 
@@ -23,9 +22,11 @@ public:
             std::is_default_constructible<U1>,
             std::is_default_constructible<U2>>,
         int> = 0>
-    constexpr explicit(
-        !std::is_default_constructible_v<U1> ||
-        !std::is_default_constructible_v<U1>
+    constexpr 
+    explicit(
+        std::disjunction_v<
+            std::negation<std::is_default_constructible<U1>>, 
+            std::negation<std::is_default_constructible<U1>>>
     )
     pair() 
     noexcept(
@@ -48,9 +49,11 @@ public:
             std::is_copy_constructible<U1>,
             std::is_copy_constructible<U2>>,
         int> = 0>
-    constexpr explicit(
-        !std::is_convertible_v<const first_type&, first_type> ||
-        !std::is_convertible_v<const second_type&, second_type>
+    constexpr
+    explicit(
+        std::disjunction_v<
+            std::negation<std::is_convertible<const first_type&, first_type>>, 
+            std::negation<std::is_convertible<const second_type&, second_type>>>
     )
     pair(const T1& x, const T2& y) 
     noexcept(
@@ -73,9 +76,11 @@ public:
             std::is_constructible<T1, U1>,
             std::is_constructible<T2, U2>>,
         int> = 0>
-    constexpr explicit(
-        !std::is_convertible_v<U1, T1> ||
-        !std::is_convertible_v<U2, T2>
+    constexpr
+    explicit(
+        std::disjunction_v<
+            std::negation<std::is_convertible<U1, T1>>, 
+            std::negation<std::is_convertible<U2, T2>>>
     )
     pair(U1&& x, U2&& y)
     noexcept(
@@ -114,9 +119,11 @@ public:
             std::is_constructible<T1, const U1&>,
             std::is_constructible<T2, const U2&>>,
         int> = 0>
-    constexpr explicit(
-        !std::is_convertible_v<const U1&, T1> ||
-        !std::is_convertible_v<const U2&, T2>
+    constexpr
+    explicit(
+        std::disjunction_v<
+            std::negation<std::is_convertible<const U1&, T1>>, 
+            std::negation<std::is_convertible<const U2&, T2>>>
     )
     pair(const pair<U1, U2>& other)
     noexcept(
@@ -141,9 +148,11 @@ public:
             std::is_constructible<T1, U1>,
             std::is_constructible<T2, U2>>,
         int> = 0>
-    constexpr explicit(
-        !std::is_convertible_v<U1, T1> ||
-        !std::is_convertible_v<U2, T2>
+    constexpr
+    explicit(
+        std::disjunction_v<
+            std::negation<std::is_convertible<U1, T1>>, 
+            std::negation<std::is_convertible<U2, T2>>>
     )
     pair(pair<U1, U2>&& other) 
     noexcept(
@@ -223,7 +232,8 @@ public:
             std::is_move_assignable_v<typename _Pair::first_type>,
             std::is_move_assignable_v<typename _Pair::second_type>>,
         int> = 0>
-    constexpr pair& operator=(_Pair&& other)
+    constexpr
+    pair& operator=(_Pair&& other)
     noexcept(
         std::conjunction_v<
             std::is_nothrow_move_assignable<T1>,

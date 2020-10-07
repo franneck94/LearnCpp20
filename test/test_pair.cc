@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include "Pair.h"
+#include "../include/Pair.h"
 
 TEST_CASE("pair_test_same_types")
 {

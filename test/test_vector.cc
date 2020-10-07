@@ -7,11 +7,11 @@
 TEST_CASE("vector_test_element_access")
 {
     learncpp::vector<int> vec{1, 2, 3};
-    REQUIRE_THROWS_AS(vec.at(-1), std::out_of_range);
+    REQUIRE_THROWS_AS((void)vec.at(-1), std::out_of_range);
     CHECK(1 == vec.at(0));
     CHECK(2 == vec.at(1));
     CHECK(3 == vec.at(2));
-    REQUIRE_THROWS_AS(vec.at(3), std::out_of_range);
+    REQUIRE_THROWS_AS((void)vec.at(3), std::out_of_range);
 
     CHECK(1 == vec[0]);
     CHECK(2 == vec[1]);
@@ -100,8 +100,24 @@ TEST_CASE("vector_test_modifiers1")
  */
 TEST_CASE("vector_test_modifiers2")
 {
-    learncpp::vector<int> vec;
+    learncpp::vector<int> vec{1, 2, 3};
     
+    auto& it = vec.cbegin();
+    int a = 10;
+    vec.insert(it, a);
+    CHECK(10 == vec[0]);
+    CHECK(1 == vec[1]);
+    CHECK(4 == vec.size());
+
+    vec.insert(vec.end(), 3, 42);
+    CHECK(42 == vec[4]);
+    CHECK(42 == vec[5]);
+    CHECK(42 == vec[6]);
+    CHECK(7 == vec.size());
+
+    vec.emplace_back(-42);
+    CHECK(-42 == vec[7]);
+    CHECK(8 == vec.size());
 }
 
 TEST_CASE("vector_test_algorithms")
@@ -110,8 +126,8 @@ TEST_CASE("vector_test_algorithms")
 
     CHECK(6.0 == learncpp::sum(vec));
     CHECK(2.0 == learncpp::mean(vec));
-    Approx target_variance = Approx(0.6666666666666666).epsilon(1e-6);
+    doctest::Approx target_variance = doctest::Approx(0.6666666666666666).epsilon(1e-6);
     CHECK(target_variance == learncpp::variance(vec));
-    Approx target_std = Approx(0.816496580927726).epsilon(1e-6);
+    doctest::Approx target_std = doctest::Approx(0.816496580927726).epsilon(1e-6);
     CHECK(target_std == learncpp::stddev(vec));
 }

@@ -1,17 +1,17 @@
 # LearnCpp20
 
-Own implementation of some parts of the c++20 standard template library.
+Own implementation of some parts of the C++20 standard template library.
 
 ## Currently implemented
 
 - Array
 - Tuple
+- Vector
 
 ## Ongoing imlementations
 
-- Vector
+- Deque
 
 ## Planned implementations
 
-- Tuple
 - List

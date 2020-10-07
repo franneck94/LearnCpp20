@@ -1,21 +1,20 @@
 #include <type_traits>
 #include <iostream>
+#include <vector>
+
+#include "../include/Vector.h"
 
 int main()
 {
-    using T1 = int;
-    using T2 = double;
-    using U1 = short;
-    using U2 = float;
+    learncpp::vector<int> vec1{1, 2, 3};
+    learncpp::vector<int> vec2{10, 10, 10};
+    
+    const auto it = vec1.begin();
+    vec1.insert(it, vec2.begin(), vec2.end());
 
-    std::cout << std::conjunction_v<
-            std::is_constructible<T1, const U1&>,
-            std::is_constructible<T2, const U2&>> << std::endl;
-
-    std::cout << std::is_constructible_v<T1, U1> << " <=> " << std::is_constructible_v<U1, T1> << std::endl;
-
-    using U3 = unsigned char;
-
-    std::cout << std::is_constructible_v<T1, U3> << " <=> " << std::is_constructible_v<U3, T1> << std::endl;
+    for(const auto& val : vec1)
+    {
+        std::cout << val << std::endl;
+    }
 
 }
